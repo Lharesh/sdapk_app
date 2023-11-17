@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">848230334891-l81dk84caf8nk10ajklro29vpc7an5eb.apps.googleusercontent.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">848230334891</string>
+    <string name="google_api_key" translatable="false">AIzaSyAub0xI70KLsed58NwIv6sbOv-A7dUGqHk</string>
+    <string name="google_app_id" translatable="false">1:848230334891:android:778dfc5edbaa56070f52ee</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyAub0xI70KLsed58NwIv6sbOv-A7dUGqHk</string>
+    <string name="google_storage_bucket" translatable="false">sdapkapp.appspot.com</string>
+    <string name="project_id" translatable="false">sdapkapp</string>
+</resources>

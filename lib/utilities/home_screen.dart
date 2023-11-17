@@ -13,10 +13,15 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<ConsumerStatefulWidget> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen>  with SingleTickerProviderStateMixin {
+
+  // we need a tab controller to control the selected tab programmatically
+  late final TabController _tabController;
+
   @override
   void initState() {
     ref.read(patientsProvider.notifier).addPatients();
+    _tabController = TabController(length: 3, vsync: this);
     super.initState();
   }
 
@@ -32,7 +37,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   onPressed: () => ref.read(authProvider).signOut(),
                   icon: const Icon(Icons.logout)),
             ],
-            bottom: const TabBar(
+            bottom:  TabBar(
+              controller: _tabController,
               tabs: [
                 Tab(icon: Icon(Icons.schedule), text: 'Appointments'),
                 Tab(icon: Icon(Icons.sick), text: 'Patients'),
@@ -44,9 +50,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               textAlign: TextAlign.center,
             ),
           ),
-          body: const TabBarView(
+          body:  TabBarView(
+            controller: _tabController,
             children: [
-              AppointmentsScreen(),
+              AppointmentsScreen(
+                createAppointment: (){
+                  print("appointment screen");
+                  setState(() {
+                    print("appointment screen set state");
+                    _tabController.index = 1;
+                  });
+                },
+              ),
               ListPatientsScreen(),
               StaffScreen(),
             ],
