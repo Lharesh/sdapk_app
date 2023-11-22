@@ -25,7 +25,8 @@ class _AppointmentsScreenState extends ConsumerState<AppointmentsScreen> {
         //       fontWeight: FontWeight.bold,
         //       fontSize: 20),
         // ),
-        DayViewWidget()
+        // DayViewWidget()
+        DayViewPage()
       ),
 
       floatingActionButton: FloatingActionButton(

@@ -1,48 +1,170 @@
+import 'dart:ffi';
+
 import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:sdapk_app/patients/models/event.dart';
 
 DateTime get _now => DateTime.now();
 
-class DayViewWidget extends StatelessWidget {
-  final GlobalKey<DayViewState>? state;
-  final double? width;
+class DayViewPage extends StatefulWidget {
 
-  const DayViewWidget({
-    Key? key,
-    this.state,
-    this.width,
-  }) : super(key: key);
+  final GlobalKey<DayViewState>? state;
+   final double? width;
+
+  const DayViewPage({Key? key, this.state, this.width}) : super(key: key);
+
+
+  @override
+  DayViewWidget createState() => DayViewWidget(state, width);
+}
+
+
+class DayViewWidget extends State<DayViewPage> {
+  // final GlobalKey<DayViewState>? state;
+  //  final double? width;
+
+  //  DayViewWidget({
+  //   Key? key,
+  //   this.state,
+  //   this.width,
+  // }) : super(key: key);
+
+  DayViewWidget(this.state,this.width);
+
+   GlobalKey<DayViewState>? state;
+   double? width;
+
+  String dropdownValue = 'Hours';
+  bool isHour = true;
+  bool isHalfHour = false;
+  bool isQuaterHour = false;
+  bool isOneAndHalfHour = false;
+
+  List<String> listVal = ['Hours', 'Half Hours', 'Quater Hours', 'One And HalfHours'];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    setState(() {
+      dropdownValue = 'Hours';
+      isHour = true;
+      isHalfHour = false;
+      isQuaterHour = false;
+      isOneAndHalfHour = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return CalendarControllerProvider(
         controller: EventController<Event>()..addAll(_events),
         child:
-        DayView<Event>(
-          key: state,
-          width: width,
-          startDuration: Duration(hours: 8),
-          showHours: false,
-          showVerticalLine: true,
-          showHalfHours: false,
-          showQuaterHours: false,
-          showHourAndHalfHours: true,
-          showLiveTimeLineInAllDays: true,
-          heightPerMinute: 3,
-          minuteSlotSize: MinuteSlotSize.minutes30,
-          timeLineBuilder: _timeLineBuilder,
-          hourIndicatorSettings: HourIndicatorSettings(
-            color: Theme.of(context).dividerColor,
-          ),
-          halfHourIndicatorSettings: HourIndicatorSettings(
-            color: Theme.of(context).dividerColor,
-            // lineStyle: LineStyle.dashed,
-          ),
-          quaterHourIndicatorSettings: HourIndicatorSettings(
-            color: Theme.of(context).dividerColor,
-            // lineStyle: LineStyle.dashed,
-          ),
+        Column(
+          // mainAxisSize: MainAxisSize.min,
+          children: <Widget> [
+
+            Expanded(
+              flex: 1,
+              child: Container(
+                alignment: Alignment.center,
+                height: 40,
+                child: Center(
+                  child: Row(
+                    children: <Widget>[
+                      SizedBox(width: 10),
+                      Text("Select Duration:"),
+                      SizedBox(width: 4),
+                      // ElevatedButton(
+                      //   onPressed: () {
+                      //     print("press button");
+                      //   },
+                      //   child: Text("Half Hour"),
+                      // ),
+                      DropdownButton<String>(
+                        // Step 3.
+                        value: dropdownValue,
+                        // Step 4.
+                        items: listVal
+                            .map<DropdownMenuItem<String>>((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Container(
+                              alignment: Alignment.centerLeft,
+                              child:Text(
+                                value,
+                                textAlign: TextAlign.center,
+                                // style: TextStyle(fontSize: 30),
+                              ),
+                            )
+                          );
+                        }).toList(),
+                        // Step 5.
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            dropdownValue = newValue!;
+                            //['Hours', 'Half Hours', 'Quater Hours', 'One And HalfHours']
+                            if(dropdownValue == "Hours"){
+                              this.isHour = true;
+                              this.isHalfHour = false;
+                              this.isQuaterHour = false;
+                              this.isOneAndHalfHour = false;
+                            } else if(dropdownValue == "Half Hours"){
+                              this.isHour = true;
+                              this.isHalfHour = true;
+                              this.isQuaterHour = false;
+                              this.isOneAndHalfHour = false;
+                            } else if(dropdownValue == "Quater Hours"){
+                              this.isHour = true;
+                              this.isHalfHour = true;
+                              this.isQuaterHour = true;
+                              this.isOneAndHalfHour = false;
+                            } else if(dropdownValue == "One And HalfHours"){
+                              this.isHour = false;
+                              this.isHalfHour = false;
+                              this.isQuaterHour = false;
+                              this.isOneAndHalfHour = true;
+                            }
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                )
+            ),
+            ),
+            Expanded(
+              flex: 9,
+                child: Container(
+                  alignment: Alignment.center,
+                  child: DayView<Event>(
+                    key: state,
+                    width: width,
+                    startDuration: Duration(hours: 8),
+                    showHours: isHour,
+                    showVerticalLine: true,
+                    showHalfHours: isHalfHour,
+                    showQuaterHours: isQuaterHour,
+                    showHourAndHalfHours: isOneAndHalfHour,
+                    showLiveTimeLineInAllDays: true,
+                    heightPerMinute: 3,
+                    minuteSlotSize: MinuteSlotSize.minutes30,
+                    timeLineBuilder: _timeLineBuilder,
+                    hourIndicatorSettings: HourIndicatorSettings(
+                      color: Theme.of(context).dividerColor,
+                    ),
+                    halfHourIndicatorSettings: HourIndicatorSettings(
+                      color: Theme.of(context).dividerColor,
+                      // lineStyle: LineStyle.dashed,
+                    ),
+                    quaterHourIndicatorSettings: HourIndicatorSettings(
+                      color: Theme.of(context).dividerColor,
+                      // lineStyle: LineStyle.dashed,
+                    ),
+                  ),
+                )
+            ),
+          ],
         ),
     );
 
