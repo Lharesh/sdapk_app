@@ -1,1 +1,39 @@
+name: SonarCloud Analysis
 
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  sonarcloud:
+    name: SonarCloud Analysis
+    runs-on: ubuntu-latest
+steps:
+      - uses: actions/checkout@v3  
+
+
+      - name: Set up SonarCloud
+        uses: SonarSource/sonarcloud-github-action@master
+        with:
+          sonarcloud_token: ${{ secrets.SONARCLOUD_TOKEN }}
+
+      - name: Analyze with SonarCloud
+        run: |
+          sonarcloud-scanner -Dsonar.projectVersion=${{ github.ref_name }} \
+                           -Dsonar.host.url=https://sonarcloud.io \
+                           -Dsonar.login=${{ secrets.SONARCLOUD_TOKEN }}
+
+      - name: Scan with OWASP ZAP
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install OWASP ZAP
+        run: |
+          npm install -g zapjs
+
+      - name: Run OWASP ZAP scan
+        run: |
+          zapjs --target ${{ secrets.TARGET_URL }} --context ${{ secrets.CONTEXT_PATH }} --scan-policy ${{ secrets.SCAN_POLICY }} --report-format ${{ secrets.REPORT_FORMAT }} --report-file ${{ secrets.REPORT_FILE }}
+          
