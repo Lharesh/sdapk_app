@@ -14,6 +14,9 @@ jobs:
         with:
           refresh-dependencies: true
 
+      - name: Check Gradle Version
+        run: gradle -v
+
       - name: Initialize Gradle wrapper
         run: ./gradlew wrapper
 
