@@ -5,35 +5,21 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+
 jobs:
   sonarcloud:
     name: SonarCloud Analysis
     runs-on: ubuntu-latest
-steps:
-      - uses: actions/checkout@v3  
 
+    steps:
+      # ... (other steps)
 
-      - name: Set up SonarCloud
-        uses: SonarSource/sonarcloud-github-action@master
-        with:
-          sonarcloud_token: ${{ secrets.SONARCLOUD_TOKEN }}
-
-      - name: Analyze with SonarCloud
+      - name: Build Flutter app for scanning
         run: |
-          sonarcloud-scanner -Dsonar.projectVersion=${{ github.ref_name }} \
-                           -Dsonar.host.url=https://sonarcloud.io \
-                           -Dsonar.login=${{ secrets.SONARCLOUD_TOKEN }}
+          flutter build apk --release --target-platform android --build-number ${{ github.run_number }}
 
-      - name: Scan with OWASP ZAP
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-
-      - name: Install OWASP ZAP
+      - name: Run OWASP ZAP scan on APK
         run: |
-          npm install -g zapjs
-
-      - name: Run OWASP ZAP scan
-        run: |
-          zapjs --target ${{ secrets.TARGET_URL }} --context ${{ secrets.CONTEXT_PATH }} --scan-policy ${{ secrets.SCAN_POLICY }} --report-format ${{ secrets.REPORT_FORMAT }} --report-file ${{ secrets.REPORT_FILE }}
-          
+          zapjs --target file://${{ github.workspace }}/build/app/outputs/apk/release/app-release.apk \
+               --context-path / \
+               --scan-policy standard --report-format html --report-file zap-report.html
